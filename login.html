@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GEL — Secure Login</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body class="login-page">
+<div class="login-shell">
+  <div class="login-brand">
+    <div class="brand-mark">G</div>
+    <div><div class="brand-name">GEL</div><div class="brand-sub">Your Mind. Your Mission.</div></div>
+  </div>
+  <div class="login-card">
+    <div class="eyebrow">PRIVATE ACCESS</div>
+    <h1>Welcome back, Seyi.</h1>
+    <p class="muted">Sign in to your personal GEL workspace.</p>
+    <form id="loginForm">
+      <label>Email or username<input id="loginUser" autocomplete="username" required placeholder="Enter your login"></label>
+      <label>Password<input id="loginPass" type="password" autocomplete="current-password" required placeholder="Enter your password"></label>
+      <button class="primary wide" type="submit">Sign in to GEL</button>
+      <div id="loginMsg" class="form-msg"></div>
+    </form>
+    <div class="security-note">🔒 Prototype mode: this download is a frontend demo. Production authentication should be server-side with HTTPS, secure sessions and optional passkeys/MFA.</div>
+  </div>
+  <div class="login-foot">One GEL account · Up to 4 authorized devices</div>
+</div>
+<script>
+const form=document.getElementById('loginForm');
+form.addEventListener('submit',e=>{
+  e.preventDefault();
+  const u=document.getElementById('loginUser').value.trim();
+  const p=document.getElementById('loginPass').value;
+  if(u && p){
+    localStorage.setItem('gel_logged_in','1');
+    localStorage.setItem('gel_user',u);
+    location.href='index.html';
+  }
+});
+</script>
+</body>
+</html>

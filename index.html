@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GEL — Personal AI</title><link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="app">
+<aside class="sidebar">
+  <div class="brand"><div class="brand-mark">G</div><div><div class="brand-name">GEL</div><div class="brand-sub">Your Mind. Your Mission.</div></div></div>
+  <nav class="nav">
+    <button class="active" data-view="home"><span class="nav-icon">⌂</span><span>Home</span></button>
+    <button data-view="journal"><span class="nav-icon">◉</span><span>Voice / Journal</span></button>
+    <button data-view="ideas"><span class="nav-icon">✦</span><span>Idea Engine</span></button>
+    <button data-view="wallet"><span class="nav-icon">▣</span><span>Account Wallet</span></button>
+    <button data-view="youtube"><span class="nav-icon">▶</span><span>YouTube Learning</span></button>
+    <button data-view="devices"><span class="nav-icon">▦</span><span>Devices</span></button>
+    <button data-view="settings"><span class="nav-icon">⚙</span><span>Settings</span></button>
+  </nav>
+  <div class="side-bottom"><div class="profile"><div class="avatar">S</div><div><b>Seyi</b><div class="status">● Online</div></div></div></div>
+</aside>
+
+<main class="main">
+<header class="topbar">
+  <div class="search">⌕ <input id="searchBox" placeholder="Search anything… projects, ideas, files, YouTube, etc."></div>
+  <div class="device-pill">🔒 <span id="deviceCount">1/4 Authorized Devices</span></div>
+  <div class="top-user"><div class="avatar">S</div><b>Seyi</b></div>
+</header>
+
+<div class="content">
+<div class="toolbar"><div><h2 class="page-title" id="pageTitle">Home</h2><div class="muted" id="globalResult"></div></div><button class="btn danger" id="logoutBtn">Sign out</button></div>
+
+<section id="homeView" class="view active">
+<div class="grid-main">
+  <div class="hero"><div class="hero-copy"><div class="eyebrow">GEL · PERSONAL AI COMPANION</div><h1>Good evening, Seyi.</h1><p>Your goals, thoughts, projects and questions — organized in one private workspace.</p><div class="hero-actions"><button class="primary" data-go="journal">Tell GEL about today</button><button class="btn" data-go="ideas">Give me an idea</button><button class="btn" data-go="youtube">What should I learn?</button></div></div></div>
+  <div class="card"><h3>Today</h3><div class="muted">Friday, September 12, 2026</div><div style="font-size:36px;margin:16px 0">10:42 PM</div><div class="row"><span>AI Companion</span><span class="live">● Online</span></div><div class="row"><span>Memory</span><span class="tag">Enabled</span></div><div class="row"><span>Devices</span><span>1 / 4</span></div><div class="quick-grid"><button class="quick" data-go="ideas">💡 New Idea<small>Generate ideas</small></button><button class="quick" data-go="journal">📓 Journal<small>Log your day</small></button><button class="quick" data-go="youtube">▶ YouTube<small>Find useful videos</small></button><button class="quick" data-go="wallet">🔐 Wallet<small>View accounts</small></button></div></div>
+</div>
+
+<div class="section-grid">
+ <div class="card"><h3>Recent Activity</h3><div class="list"><div class="row"><span>Learned about APIs</span><span class="tag">Today</span></div><div class="row"><span>Worked on GEL</span><span class="tag">Today</span></div><div class="row"><span>New idea: Web + Robotics</span><span class="tag">Today</span></div></div></div>
+ <div class="card"><h3>Your Focus</h3><p class="muted">Build useful technology and understand why things work.</p><div class="row"><span>Web Development</span><b>70%</b></div><div class="progress"><span style="width:70%"></span></div><div class="row"><span>Robotics</span><b>40%</b></div><div class="progress"><span style="width:40%"></span></div></div>
+ <div class="card"><h3>WHY? Mode</h3><p class="muted">Don't just get the answer. Question the assumption behind it.</p><button class="primary wide" data-go="journal">Start thinking</button></div>
+</div>
+</section>
+
+<section id="journalView" class="view"><div class="card"><h3>Daily Journal</h3><p class="muted">Tell GEL what happened, what you learned, what confused you, or what you are questioning.</p><form id="journalForm"><textarea id="journalText" placeholder="How did your day go? What did you learn today? Why did something stand out?"></textarea><br><button class="primary" type="submit">Save to Journal</button></form></div><div class="card" style="margin-top:16px"><div class="toolbar"><h3>Recent entries</h3><button class="btn danger" id="clearJournal">Clear local entries</button></div><div id="journalList"></div></div></section>
+
+<section id="ideasView" class="view"><div class="card"><h3>Idea Engine</h3><p class="muted">Prototype: GEL connects your interests into practical project ideas.</p><button class="primary" id="ideaBtn">Generate a new idea</button><div id="ideaOutput" style="margin-top:18px"></div></div><div class="section-grid"><div class="card"><h3>Web + Robotics</h3><p class="muted">Control a physical robot through a web interface, with sensors and AI commands.</p></div><div class="card"><h3>AI + Learning</h3><p class="muted">Turn your daily learning into a searchable personal knowledge base.</p></div><div class="card"><h3>Business Tools</h3><p class="muted">Build tools that solve real problems for local businesses.</p></div></div></section>
+
+<section id="walletView" class="view"><div class="card"><h3>Account Wallet</h3><p class="muted">Your private account organizer. Passwords are masked in this prototype.</p><div class="list"><div class="row"><div><b>GEL</b><div class="muted">Main personal account</div></div><span class="live">● Live</span></div><div class="row"><div><b>X</b><div class="muted">@Seyi · Password ••••••••</div></div><span class="live">● Live</span></div><div class="row"><div><b>YouTube</b><div class="muted">Seyi · Password ••••••••</div></div><span class="live">● Live</span></div></div><div class="note" style="margin-top:14px">For the real version, account credentials should be stored in a secure server-side vault, never hard-coded into frontend JavaScript.</div></div></section>
+
+<section id="youtubeView" class="view"><div class="card"><h3>YouTube Learning</h3><p class="muted">Search YouTube for something you want to learn.</p><div style="display:flex;gap:8px"><input id="ytQuery" placeholder="e.g. ESP32 web robotics JavaScript"><button class="primary" id="ytSearch">Search YouTube</button></div><div class="yt"><div class="thumb">▶</div><div><a href="https://www.youtube.com/results?search_query=web+development+robotics" target="_blank" rel="noopener"><b>Build a Real Robot with Web Control</b></a><div class="muted">GEL will later personalize these recommendations from your learning history.</div></div></div></div></section>
+
+<section id="devicesView" class="view"><div class="card"><h3>Authorized Devices</h3><p class="muted">One GEL account, maximum 4 authorized devices. Removing a device should invalidate its session in the production version.</p><div id="deviceList"></div></div></section>
+
+<section id="settingsView" class="view"><div class="card"><h3>Settings</h3><div class="form-grid"><label>Display name<input id="displayName"></label><label>AI name<input value="GEL" disabled></label></div><div style="margin-top:14px"><button class="primary" id="saveSettings">Save settings</button></div></div><div class="card" style="margin-top:16px"><h3>Security</h3><div class="row"><span>Maximum authorized devices</span><b>4</b></div><div class="row"><span>Session security</span><span class="tag">Production backend required</span></div><div class="row"><span>HTTPS / secure cookies</span><span class="tag">Production backend required</span></div><div class="note">OWASP recommends secure server-side session management, HTTPS, secure cookies, re-authentication for sensitive actions, and the ability to terminate active sessions. cite markers are intentionally omitted from this local prototype UI.</div></div></section>
+
+<div class="footer">GEL Prototype · Built as a professional foundation for the full personal AI.</div>
+</div></main></div>
+<script src="app.js"></script>
+</body></html>
