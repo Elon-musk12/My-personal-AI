@@ -69,3 +69,192 @@ document.getElementById('clearJournal').addEventListener('click',()=>{if(confirm
 document.getElementById('searchBox').addEventListener('keydown',e=>{
  if(e.key==='Enter'){const q=e.target.value.trim();if(!q)return;document.getElementById('globalResult').textContent=`GEL search is ready for: “${q}” — full AI/web search will be connected in Phase 2.`;showView('home');}
 });
+
+
+/* =========================================================
+   GEL CHAT + VOICE
+   Exact DOM IDs:
+   chat-form, chat-input, chat-messages, mic-btn
+   ========================================================= */
+
+(function initGELChatVoice() {
+  const chatForm = document.getElementById("chat-form");
+  const chatInput = document.getElementById("chat-input");
+  const chatMessages = document.getElementById("chat-messages");
+  const micBtn = document.getElementById("mic-btn");
+  const voiceStatus = document.getElementById("voice-status");
+
+  if (!chatForm || !chatInput || !chatMessages || !micBtn) {
+    console.error("GEL chat: required DOM elements are missing.", {
+      chatForm, chatInput, chatMessages, micBtn
+    });
+    return;
+  }
+
+  function appendMessage(text, role) {
+    const wrapper = document.createElement("div");
+    wrapper.className = "chat-message " + (role === "user" ? "user" : "assistant");
+
+    const label = document.createElement("div");
+    label.className = "chat-label";
+    label.textContent = role === "user" ? "YOU" : "GEL";
+
+    const bubble = document.createElement("div");
+    bubble.className = "chat-bubble";
+    bubble.textContent = text;
+
+    wrapper.appendChild(label);
+    wrapper.appendChild(bubble);
+    chatMessages.appendChild(wrapper);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+
+    return wrapper;
+  }
+
+  function setVoiceStatus(message) {
+    if (voiceStatus) voiceStatus.textContent = message || "";
+  }
+
+  function speakGEL(text) {
+    if (!("speechSynthesis" in window) || !text) return;
+    try {
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = "en-NG";
+      utterance.rate = 1;
+      utterance.pitch = 1;
+      window.speechSynthesis.speak(utterance);
+    } catch (err) {
+      console.warn("GEL voice output unavailable:", err);
+    }
+  }
+
+  async function sendToGEL(message) {
+    const clean = String(message || "").trim();
+    if (!clean) return;
+
+    // IMPORTANT: append the user's message BEFORE making the request.
+    appendMessage(clean, "user");
+    chatInput.value = "";
+
+    const thinking = appendMessage("GEL is thinking…", "assistant");
+    thinking.classList.add("thinking");
+
+    const API_BASE = window.GEL_API_URL || "https://gel-backend.onrender.com";
+
+    try {
+      const response = await fetch(API_BASE + "/api/chat", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: clean })
+      });
+
+      let data = {};
+      try { data = await response.json(); } catch (_) {}
+
+      if (!response.ok) {
+        throw new Error(data.error || data.message || ("Request failed (" + response.status + ")"));
+      }
+
+      const reply = typeof data.reply === "string"
+        ? data.reply
+        : "I received the request, but GEL returned an unexpected response.";
+
+      thinking.remove();
+      appendMessage(reply, "assistant");
+      speakGEL(reply);
+    } catch (error) {
+      console.error("GEL chat error:", error);
+      thinking.remove();
+      appendMessage(
+        "I couldn't reach GEL right now. " + (error.message || "Please try again."),
+        "assistant"
+      );
+    }
+  }
+
+  chatForm.addEventListener("submit", function (event) {
+    event.preventDefault();
+    sendToGEL(chatInput.value);
+  });
+
+  chatInput.addEventListener("keydown", function (event) {
+    if (event.key === "Enter" && !event.shiftKey) {
+      event.preventDefault();
+      chatForm.requestSubmit();
+    }
+  });
+
+  // Browser speech-to-text. Chrome/Edge expose this as webkitSpeechRecognition.
+  const SpeechRecognition =
+    window.SpeechRecognition || window.webkitSpeechRecognition;
+
+  if (!SpeechRecognition) {
+    micBtn.disabled = true;
+    micBtn.title = "Speech recognition is not supported in this browser";
+    setVoiceStatus("Voice input isn't supported here. Try Chrome or Edge.");
+    return;
+  }
+
+  const recognition = new SpeechRecognition();
+  recognition.lang = "en-NG";
+  recognition.continuous = false;
+  recognition.interimResults = true;
+  recognition.maxAlternatives = 1;
+
+  let listening = false;
+
+  recognition.onstart = function () {
+    listening = true;
+    micBtn.classList.add("listening");
+    micBtn.textContent = "⏹️";
+    micBtn.title = "Stop listening";
+    setVoiceStatus("Listening… speak now.");
+  };
+
+  recognition.onresult = function (event) {
+    let transcript = "";
+    for (let i = event.resultIndex; i < event.results.length; i++) {
+      transcript += event.results[i][0].transcript;
+    }
+    chatInput.value = transcript.trim();
+  };
+
+  recognition.onerror = function (event) {
+    console.warn("Speech recognition error:", event.error);
+    setVoiceStatus(
+      event.error === "not-allowed"
+        ? "Microphone permission was blocked."
+        : "Voice input error: " + event.error
+    );
+  };
+
+  recognition.onend = function () {
+    listening = false;
+    micBtn.classList.remove("listening");
+    micBtn.textContent = "🎙️";
+    micBtn.title = "Use microphone";
+
+    const text = chatInput.value.trim();
+    setVoiceStatus(text ? "Voice captured. Press Send." : "");
+
+    // Do NOT auto-send. This lets the user review/edit the transcription first.
+  };
+
+  micBtn.addEventListener("click", function () {
+    if (listening) {
+      recognition.stop();
+      return;
+    }
+
+    try {
+      chatInput.focus();
+      recognition.start();
+    } catch (error) {
+      console.warn("Could not start microphone:", error);
+      setVoiceStatus("Couldn't start the microphone. Try again.");
+    }
+  });
+})();
+
