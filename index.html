@@ -41,6 +41,39 @@
  <div class="card"><h3>Your Focus</h3><p class="muted">Build useful technology and understand why things work.</p><div class="row"><span>Web Development</span><b>70%</b></div><div class="progress"><span style="width:70%"></span></div><div class="row"><span>Robotics</span><b>40%</b></div><div class="progress"><span style="width:40%"></span></div></div>
  <div class="card"><h3>WHY? Mode</h3><p class="muted">Don't just get the answer. Question the assumption behind it.</p><button class="primary wide" data-go="journal">Start thinking</button></div>
 </div>
+
+<div class="gel-chat card">
+  <div class="chat-header">
+    <div>
+      <div class="eyebrow">GEL · LIVE AI CHANNEL</div>
+      <h3>Talk to GEL</h3>
+      <div class="muted">Ask questions, plan projects, or tell GEL what you're working on.</div>
+    </div>
+    <span class="chat-status"><span class="chat-status-dot"></span> Connected</span>
+  </div>
+
+  <div id="chatMessages" class="chat-messages">
+    <div class="chat-message assistant">
+      <div class="chat-avatar">G</div>
+      <div class="chat-bubble">
+        <b>GEL</b>
+        <div>I'm here. What are we working on?</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="chatTyping" class="chat-typing" hidden>
+    <span></span><span></span><span></span> GEL is thinking…
+  </div>
+
+  <form id="chatForm" class="chat-form">
+    <button id="voiceBtn" class="voice-btn" type="button" title="Speak to GEL" aria-label="Speak to GEL">🎙️</button>
+    <textarea id="chatInput" rows="1" maxlength="10000" placeholder="Message GEL…" autocomplete="off"></textarea>
+    <button id="sendChatBtn" class="primary send-btn" type="submit">Send</button>
+  </form>
+  <div id="voiceStatus" class="voice-status muted"></div>
+</div>
+
 </section>
 
 <section id="journalView" class="view"><div class="card"><h3>Daily Journal</h3><p class="muted">Tell GEL what happened, what you learned, what confused you, or what you are questioning.</p><form id="journalForm"><textarea id="journalText" placeholder="How did your day go? What did you learn today? Why did something stand out?"></textarea><br><button class="primary" type="submit">Save to Journal</button></form></div><div class="card" style="margin-top:16px"><div class="toolbar"><h3>Recent entries</h3><button class="btn danger" id="clearJournal">Clear local entries</button></div><div id="journalList"></div></div></section>

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>GEL — Secure Access</title>
+<title>GEL — Secure Login</title>
 <link rel="stylesheet" href="styles.css">
 </head>
 <body class="login-page">
@@ -12,161 +12,30 @@
     <div class="brand-mark">G</div>
     <div><div class="brand-name">GEL</div><div class="brand-sub">Your Mind. Your Mission.</div></div>
   </div>
-
   <div class="login-card">
     <div class="eyebrow">PRIVATE ACCESS</div>
-    <h1 id="authTitle">Welcome back, Seyi.</h1>
-    <p class="muted" id="authSubtitle">Sign in to your personal GEL workspace.</p>
-
-    <form id="authForm">
-      <label>Email
-        <input id="authEmail" type="email" autocomplete="email" required placeholder="Enter your email">
-      </label>
-
-      <label id="deviceField">Device name
-        <input id="deviceName" autocomplete="off" placeholder="e.g. Seyi's Laptop">
-      </label>
-
-      <label>Password
-        <input id="authPass" type="password" autocomplete="current-password" minlength="12" required placeholder="Enter your password">
-      </label>
-
-      <button class="primary wide" id="authSubmit" type="submit">Sign in to GEL</button>
-      <div id="authMsg" class="form-msg"></div>
+    <h1>Welcome back, Seyi.</h1>
+    <p class="muted">Sign in to your personal GEL workspace.</p>
+    <form id="loginForm">
+      <label>Email or username<input id="loginUser" autocomplete="username" required placeholder="Enter your login"></label>
+      <label>Password<input id="loginPass" type="password" autocomplete="current-password" required placeholder="Enter your password"></label>
+      <button class="primary wide" type="submit">Sign in to GEL</button>
+      <div id="loginMsg" class="form-msg"></div>
     </form>
-
-    <button class="wide" id="toggleAuth" type="button" style="margin-top:10px">
-      New to GEL? Create an account
-    </button>
-
-    <div class="security-note">
-      🔒 Secure access uses the production GEL backend with server-side authentication, sessions, and a maximum of 4 authorized devices.
-    </div>
+    <div class="security-note">🔒 Prototype mode: this download is a frontend demo. Production authentication should be server-side with HTTPS, secure sessions and optional passkeys/MFA.</div>
   </div>
-
   <div class="login-foot">One GEL account · Up to 4 authorized devices</div>
 </div>
-
 <script>
-const API_BASE = window.GEL_API_URL || "https://gel-backend.onrender.com";
-
-const form = document.getElementById("authForm");
-const email = document.getElementById("authEmail");
-const password = document.getElementById("authPass");
-const deviceName = document.getElementById("deviceName");
-const deviceField = document.getElementById("deviceField");
-const msg = document.getElementById("authMsg");
-const title = document.getElementById("authTitle");
-const subtitle = document.getElementById("authSubtitle");
-const submit = document.getElementById("authSubmit");
-const toggle = document.getElementById("toggleAuth");
-
-let mode = "login";
-
-function showMessage(text, error = false) {
-  msg.textContent = text;
-  msg.style.color = error ? "#ff6b6b" : "";
-}
-
-function setMode(nextMode) {
-  mode = nextMode;
-  const register = mode === "register";
-
-  title.textContent = register ? "Create your GEL account." : "Welcome back, Seyi.";
-  subtitle.textContent = register
-    ? "Create your personal GEL workspace."
-    : "Sign in to your personal GEL workspace.";
-  submit.textContent = register ? "Create GEL account" : "Sign in to GEL";
-  toggle.textContent = register
-    ? "Already have an account? Sign in"
-    : "New to GEL? Create an account";
-
-  deviceField.style.display = register ? "none" : "";
-  password.autocomplete = register ? "new-password" : "current-password";
-  showMessage("");
-}
-
-toggle.addEventListener("click", () => {
-  setMode(mode === "login" ? "register" : "login");
-});
-
-async function api(path, options = {}) {
-  const response = await fetch(API_BASE + path, {
-    ...options,
-    credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
-      ...(options.headers || {})
-    }
-  });
-
-  let data = {};
-  try { data = await response.json(); } catch (_) {}
-
-  if (!response.ok) {
-    const error = new Error(data.error || data.message || `Request failed (${response.status})`);
-    error.status = response.status;
-    error.code = data.code;
-    throw error;
-  }
-  return data;
-}
-
-// If already authenticated, go straight to the dashboard.
-(async () => {
-  try {
-    const data = await api("/api/auth/me");
-    if (data && data.user) location.href = "index.html";
-  } catch (_) {}
-})();
-
-form.addEventListener("submit", async (event) => {
-  event.preventDefault();
-  showMessage(mode === "register" ? "Creating your account…" : "Signing you in…");
-
-  const body = {
-    email: email.value.trim(),
-    password: password.value
-  };
-
-  try {
-    if (mode === "register") {
-      await api("/api/auth/register", {
-        method: "POST",
-        body: JSON.stringify(body)
-      });
-
-      showMessage("Account created successfully. Signing you in…");
-
-      await api("/api/auth/login", {
-        method: "POST",
-        body: JSON.stringify({
-          ...body,
-          deviceName: deviceName.value.trim() || "Web Browser"
-        })
-      });
-
-      location.href = "index.html";
-      return;
-    }
-
-    await api("/api/auth/login", {
-      method: "POST",
-      body: JSON.stringify({
-        ...body,
-        deviceName: deviceName.value.trim() || "Web Browser"
-      })
-    });
-
-    location.href = "index.html";
-  } catch (error) {
-    if (error.code === "DEVICE_LIMIT_REACHED") {
-      showMessage("This GEL account already has 4 authorized devices. Revoke one before signing in on another device.", true);
-    } else if (error.status === 409) {
-      showMessage("An account with this email already exists. Switch to Sign in.", true);
-    } else {
-      showMessage(error.message || "Something went wrong. Please try again.", true);
-    }
+const form=document.getElementById('loginForm');
+form.addEventListener('submit',e=>{
+  e.preventDefault();
+  const u=document.getElementById('loginUser').value.trim();
+  const p=document.getElementById('loginPass').value;
+  if(u && p){
+    localStorage.setItem('gel_logged_in','1');
+    localStorage.setItem('gel_user',u);
+    location.href='index.html';
   }
 });
 </script>
