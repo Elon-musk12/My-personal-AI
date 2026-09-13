@@ -1,79 +1,19 @@
-const express = require("express");
-const cors = require("cors");
-const cookieParser = require("cookie-parser");
-const helmet = require("helmet");
-const OpenAI = require("openai");
-
-const app = express();
-
-// --- Middleware Setup ---
-app.use(helmet());
-app.use(express.json());
-app.use(cookieParser());
-app.use(
-  cors({
-    origin: process.env.CLIENT_URL || true,
-    credentials: true,
-  })
-);
-
-// --- OpenAI Setup ---
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
-// --- Placeholder Auth Middleware (Replace/adjust if you have full JWT auth) ---
-const requireAuth = (req, res, next) => {
-  // If you use cookies or headers for auth, check here
-  next();
-};
-
-// --- GEL AI Chat Endpoint ---
-app.post("/api/chat", requireAuth, async (req, res) => {
-  try {
-    const { message } = req.body;
-
-    if (!message || typeof message !== "string") {
-      return res.status(400).json({ error: "A message string is required." });
-    }
-
-    // Call OpenAI Responses API
-    const response = await openai.responses.create({
-      model: process.env.OPENAI_MODEL || "gpt-4o-mini",
-      input: [
-        {
-          role: "system",
-          content:
-            "You are GEL, a helpful, proactive AI assistant built by Seyi. Keep answers clear, engaging, and concise.",
-        },
-        {
-          role: "user",
-          content: message,
-        },
-      ],
-    });
-
-    const reply = response.output_text || "I processed your request, but received an empty response.";
-
-    return res.json({
-      reply,
-      responseId: response.id,
-    });
-  } catch (error) {
-    console.error("GEL Chat Route Error:", error);
-    return res.status(500).json({
-      error: "Failed to generate AI response. Check server logs.",
-    });
+{
+  "name": "gel-backend",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "helmet": "^8.0.0",
+    "jsonwebtoken": "^9.0.2",
+    "pg": "^8.13.1",
+    "openai": "^4.86.0"
   }
-});
-
-// --- Health Check ---
-app.get("/health", (req, res) => {
-  res.json({ status: "ok", service: "GEL Backend" });
-});
-
-// --- Start Server ---
-const PORT = process.env.PORT || 10000;
-app.listen(PORT, () => {
-  console.log(`GEL Backend running on port ${PORT}`);
-});
+}
